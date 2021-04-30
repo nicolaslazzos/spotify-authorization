@@ -15,8 +15,12 @@ app.use(cors());
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REDIRECT_URI = `http://${process.env.HOST}:${process.env.PORT}/api/auth/callback`;
 const AUTHORIZATION = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
+
+const HOST = process.env.HOST;
+const CLIENT_HOST = process.env.CLIENT_HOST;
+
+const REDIRECT_URI = `${HOST}/api/auth/callback`;
 
 app.get("/api/auth", (req: Request, res: Response) => {
   const query = getParams({ response_type: "code", client_id: CLIENT_ID, redirect_uri: REDIRECT_URI });
@@ -38,11 +42,11 @@ app.get("/api/auth/callback", async (req: Request, res: Response) => {
 
     const query = getParams(response.data);
 
-    res.redirect(`http://localhost:3000?${query}`);
+    res.redirect(`${CLIENT_HOST}?${query}`);
   } catch (e) {
     console.error(e.message);
 
-    res.redirect("http://localhost:3000");
+    res.redirect(`${CLIENT_HOST}`);
   }
 });
 
@@ -64,4 +68,6 @@ app.post("/api/auth/token", async (req: Request, res: Response) => {
   }
 });
 
-app.listen(process.env.PORT, () => console.log(`Server running on port ${process.env.PORT}`));
+const PORT = process.env.PORT;
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
